@@ -2,13 +2,7 @@
 	SimpleStateMachine - TEMPLATE
 	by Scott Kildall
 
-	Template:
-
-	(1) Add your own PNG files in the assets folder. Make sure they match the names ***exactly*** of the existing PNGs.
-	(2) Add custom drawing code to drawOne(), drawTwo(), drawThree(), drawFour(), drawFive()
-	(3) You can add your own interfaces - keys, mouse events, etc in the Interfaces section
-
-	Also start your localhost before running this, otherwise no PNGs will display
+	Edited by Tyler Wong
 
 ------------------------------------------------------------------------------------
 	The way it works — you don't need to know this for the template use
@@ -16,6 +10,10 @@
 	* drawFunction is a VARIABLE that points to a function varible name
 	* drawOne(), drawTwo(), etc. are set to be functions.
 	* the the keys 1-5 will change the drawFunction variable
+	* starts with drawSplash and waits for a mousePressed event
+	* enters the instructions screen that uses an array of strings
+	* adds a key, 's' to return to the splash screen
+
 
 ------------------------------------------------------------------------------------
 	Notes:
@@ -34,19 +32,27 @@
 // Array of images
 var images = [];
 
+//Array of instruction text
+var instructions = [];
+
 // variable that is a function 
 var drawFunction;
 
 // offset from bottom of screen
 var gTextOffset = 20;
 
-// load all images into an array
+// load all images & instructions into an array
 function preload() {
   images[0] = loadImage('assets/one.png');
   images[1] = loadImage('assets/two.png');
   images[2] = loadImage('assets/three.png');
   images[3] = loadImage('assets/four.png');
   images[4] = loadImage('assets/five.png');
+  images[5] = loadImage('assets/splash.png');
+
+  instructions[0] = "This showcases the different moods I will typically feel in a day.";
+  instructions[1] = "You can press the numbers 1-5 to see different drawings";
+  instructions[2] = "'s' will return you to the main Splash screen!";
 }
 
 // Center drawing, drawFunction will be one for default
@@ -59,7 +65,7 @@ function setup() {
   textSize(24);
 
   // set to one for startup
-  drawFunction = drawOne;
+  drawFunction = drawSplash;
 }
 
 // Very simple, sets the background color and calls your state machine function
@@ -70,13 +76,20 @@ function draw() {
   drawFunction();
 }
 
-//========= TEMPLATE: modify these functions, INSIDE the function blocks only =========
+//-- drawInstructions() will draw the array of instructions starting at the middle of the screen
+drawInstructions = function() { 
+	fill(0,0,0);
+	for(let i = 0; i < 3; i++) {
+		text(instructions[i], width/2, height/2 + (60 * i));
+	}
+}
 
 //-- drawOne() will draw the image at index 0 from the array
 drawOne = function() {
    image(images[0],width/2, height/2);
 
    fill(0,0,0);
+   textSize(50);
    text("This is how I feel being super tired.", width/2, height - gTextOffset);
 }
 
@@ -112,11 +125,21 @@ drawFive = function() {
    text("When I feel overwhelmed and stressed and just stare into space.", width/2, height - gTextOffset);
 }
 
+//-- drawSplash() will draw the image at index 4 from the array
+drawSplash = function() {
+   image(images[5],width/2, height/2);
+}
+
 
 //========= TEMPLATE: add or change interface functions, as you like =========
 
 // Change the drawFunction variable based on your interaction
 function keyTyped() {
+  if( drawFunction === drawSplash ) {
+  	return;
+  }
+
+
   if( key === '1' ) {
   	drawFunction = drawOne;
   }
@@ -131,5 +154,16 @@ function keyTyped() {
   }
   else if( key === '5' ) {
   	drawFunction = drawFive;
+  }
+
+  else if( key === 's' ) {
+    drawFunction = drawSplash;
+  }
+}
+
+function mousePressed() {
+  // only change state if we are in splash screen
+  if( drawFunction === drawSplash ) {
+    drawFunction = drawInstructions;
   }
 }
